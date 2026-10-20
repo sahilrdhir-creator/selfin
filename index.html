@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Selfin">
+<meta name="theme-color" content="#0a0e1a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Selfin — All your wealth. One view.</title>
+<style>
+:root{
+  --bg:#0a0e1a; --bg2:#0d1322; --card:#121a2e; --card2:#18213a;
+  --line:rgba(255,255,255,.07); --ink:#f4f6fb; --ink2:#aab3c7; --muted:#6b7488;
+  --mint:#79f1d2; --lav:#9b8cff; --sand:#e5b567; --red:#ff8a8a;
+  --r:20px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif;
+  font-size:16px;line-height:1.45}
+body{padding:env(safe-area-inset-top) 0 0}
+.app{max-width:520px;margin:0 auto;padding:12px 18px calc(96px + env(safe-area-inset-bottom))}
+
+/* header */
+.brand{display:flex;align-items:center;gap:10px;padding:10px 0 4px}
+.logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--mint),var(--lav));
+  display:flex;align-items:center;justify-content:center;font-weight:800;color:#0a0e1a;font-size:19px}
+.brand b{font-size:17px;letter-spacing:.2px}
+h1.greet{font-size:30px;margin:14px 0 2px;letter-spacing:-.4px}
+.sub{color:var(--ink2);margin:0 0 16px;font-size:14px}
+
+/* cards */
+.card{background:linear-gradient(180deg,var(--card),var(--bg2));border:1px solid var(--line);
+  border-radius:var(--r);padding:18px;margin-bottom:14px;box-shadow:0 8px 28px rgba(0,0,0,.35)}
+.card h2{font-size:13px;color:var(--ink2);font-weight:600;margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em}
+.hero{font-size:40px;font-weight:700;letter-spacing:-.8px;line-height:1.05}
+.hero small{font-size:20px;color:var(--ink2);font-weight:600}
+.delta{font-size:13px;color:var(--mint);margin-top:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:13px 14px}
+.stat .l{font-size:11.5px;color:var(--ink2)}
+.stat .v{font-size:19px;font-weight:700;margin-top:2px}
+
+/* account cards */
+.acct{display:flex;align-items:center;gap:13px;background:var(--card2);border:1px solid var(--line);
+  border-radius:16px;padding:13px 14px;margin:9px 0}
+.amark{width:40px;height:40px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:15px;color:#0a0e1a}
+.acct .mid{flex:1;min-width:0}
+.acct .nm{font-weight:650;font-size:15px}
+.acct .ty{font-size:12px;color:var(--ink2)}
+.acct .bal{font-weight:700;font-size:16px;text-align:right}
+.badge{display:inline-block;font-size:10px;color:var(--muted);border:1px solid var(--line);
+  border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:1px}
+.apy{font-size:11.5px;color:var(--mint)}
+
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-around;
+  background:rgba(13,19,34,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-top:1px solid var(--line);padding:10px 6px calc(12px + env(safe-area-inset-bottom));z-index:40}
+.nav button{background:none;border:none;color:var(--muted);font:inherit;font-size:10.5px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:3px;min-width:58px}
+.nav button svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav button.on{color:var(--mint)}
+
+.view{display:none}.view.on{display:block;animation:fade .22s ease}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+/* buttons & forms */
+.btn{background:linear-gradient(135deg,var(--mint),#5fd9bd);color:#07251c;border:none;border-radius:14px;
+  padding:13px 18px;font:inherit;font-weight:700;width:100%;cursor:pointer;font-size:15px}
+.btn.ghost{background:var(--card2);color:var(--ink);border:1px solid var(--line)}
+.btn.sm{width:auto;padding:8px 14px;font-size:13px;border-radius:10px}
+label.f{display:block;font-size:11.5px;color:var(--ink2);margin:10px 0 4px}
+input.f,select.f{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:12px;
+  padding:12px;color:var(--ink);font:inherit;font-size:15px}
+.row{display:flex;gap:10px}.row>*{flex:1}
+
+/* chart bits */
+.allocbar{display:flex;height:14px;border-radius:999px;overflow:hidden;gap:2px;background:var(--bg2);margin:12px 0 10px}
+.allocbar div{height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--ink2)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+.note{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+.insight{background:var(--card2);border:1px solid var(--line);border-left:3px solid var(--lav);
+  border-radius:14px;padding:13px 14px;margin:10px 0;font-size:14px;color:var(--ink2)}
+.insight b{color:var(--ink)}
+.chip{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:999px;
+  padding:8px 13px;font-size:13px;color:var(--ink2);margin:4px 4px 0 0;cursor:pointer}
+.ai-a{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:13px;margin:10px 0;font-size:14px;color:var(--ink2);display:none}
+.empty{text-align:center;padding:30px 10px;color:var(--ink2)}
+.empty .big{font-size:40px;margin-bottom:8px}
+.mgr{border-top:1px solid var(--line);margin-top:10px;padding-top:4px}
+.mgr .acct .del{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer}
+svg.chart text{font-family:inherit}
+.onboard{position:fixed;inset:0;background:rgba(7,10,18,.9);backdrop-filter:blur(8px);z-index:60;
+  display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--card);border-radius:24px 24px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));
+  width:100%;max-width:520px;max-height:86vh;overflow:auto}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand"><div class="logo">S</div><b>Selfin</b>
+    <span style="margin-left:auto;font-size:11px;color:var(--muted)">All your wealth. One view.</span></div>
+
+  <!-- HOME -->
+  <div class="view on" id="v-home">
+    <h1 class="greet">Hi Sahil.</h1>
+    <p class="sub">Every asset. Every account. One beautiful picture.</p>
+
+    <div class="card">
+      <h2>Net worth <span class="badge">manually tracked</span></h2>
+      <div class="hero" id="h-net">$0</div>
+      <div class="delta" id="h-delta"></div>
+      <div class="allocbar" id="h-alloc"></div>
+      <div class="legend" id="h-legend"></div>
+    </div>
+
+    <div class="grid2">
+      <div class="stat"><div class="l">Cash · personal</div><div class="v" id="h-cashp">—</div></div>
+      <div class="stat"><div class="l">Cash · business</div><div class="v" id="h-cashb">—</div></div>
+      <div class="stat"><div class="l">Est. annual interest</div><div class="v" id="h-int">—</div></div>
+      <div class="stat"><div class="l">Metals (at cost)</div><div class="v" id="h-gold">—</div></div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <h2>Performance</h2>
+      <div id="h-chart"></div>
+      <div class="note">Net worth over time, from your manual updates.</div>
+    </div>
+
+    <div class="card">
+      <h2>Selfin insights</h2>
+      <div id="h-insights"></div>
+    </div>
+  </div>
+
+  <!-- ACCOUNTS -->
+  <div class="view" id="v-accounts">
+    <h1 class="greet" style="font-size:24px">Accounts</h1>
+    <div class="card">
+      <h2>Personal</h2><div id="a-personal"></div>
+      <h2 style="margin-top:16px">Business</h2><div id="a-business"></div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);margin-top:12px">
+        <input type="checkbox" id="a-inc" checked style="accent-color:var(--mint);width:18px;height:18px">
+        Include business in combined overview
+      </label>
+      <h2 style="margin-top:16px">Credit</h2><div id="a-credit"></div>
+      <div class="note">Balances are manually entered reference figures — not a live bank connection, and not proof of funds. Edit them in Profile.</div>
+    </div>
+  </div>
+
+  <!-- INVEST -->
+  <div class="view" id="v-invest">
+    <h1 class="greet" style="font-size:24px">Investments</h1>
+    <div class="card">
+      <h2>Interest income</h2>
+      <div class="hero" style="font-size:30px" id="i-annual">—</div>
+      <div class="sub" id="i-sub"></div>
+      <div class="grid2">
+        <div class="stat"><div class="l">Monthly equivalent</div><div class="v" id="i-month">—</div></div>
+        <div class="stat"><div class="l">Daily equivalent</div><div class="v" id="i-day">—</div></div>
+      </div>
+      <div id="i-banks" style="margin-top:10px"></div>
+      <h2 style="margin-top:18px">Compounding projection</h2>
+      <div id="i-proj"></div>
+      <h2 style="margin-top:18px">Calculator</h2>
+      <label class="f">If deposits were <b id="c-amt-l" style="color:var(--ink)"></b> at <b id="c-apy-l" style="color:var(--ink)"></b> APY</label>
+      <input type="range" id="c-amt" min="0" max="2000000" step="10000" style="width:100%;accent-color:var(--mint)">
+      <input type="range" id="c-apy" min="0" max="8" step="0.05" style="width:100%;accent-color:var(--lav)">
+      <div class="grid2" style="margin-top:8px">
+        <div class="stat"><div class="l">Per year</div><div class="v" id="c-yr">—</div></div>
+        <div class="stat"><div class="l">Per month</div><div class="v" id="c-mo">—</div></div>
+      </div>
+      <div class="note">Estimates assume APY holds and balances stay unchanged — interest rates change and payout terms vary by account. Not guaranteed income.</div>
+    </div>
+    <div class="card">
+      <h2>Gold &amp; precious metals</h2>
+      <div id="g-list"></div>
+      <div class="note">Shown at purchase cost. Current market value needs each bar's weight and purity — add them in Profile when confirmed and spot pricing can follow.</div>
+    </div>
+  </div>
+
+  <!-- AI -->
+  <div class="view" id="v-ai">
+    <h1 class="greet" style="font-size:24px">Selfin AI</h1>
+    <p class="sub">Rule-based financial insights computed from your entered data — clearly not a live AI advisor, and not financial advice.</p>
+    <div class="card">
+      <h2>Financial health</h2>
+      <div id="ai-health"></div>
+    </div>
+    <div class="card">
+      <h2>Ask Selfin</h2>
+      <div id="ai-chips"></div>
+      <div class="ai-a" id="ai-answer"></div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="view" id="v-profile">
+    <h1 class="greet" style="font-size:24px">Profile</h1>
+    <div class="card">
+      <h2>Manage accounts</h2>
+      <div class="mgr" id="p-list"></div>
+      <button class="btn ghost" style="margin-top:10px" onclick="openSheet()">+ Add account</button>
+    </div>
+    <div class="card">
+      <h2>Gold holdings</h2>
+      <div class="row">
+        <div><label class="f">Bars</label><input class="f" id="p-gqty" type="number" min="0" step="1"></div>
+        <div><label class="f">Cost / bar ($)</label><input class="f" id="p-gcost" type="number" min="0" step="1"></div>
+        <div><label class="f">Year</label><input class="f" id="p-gyear" type="number" min="1980" max="2030"></div>
+      </div>
+      <button class="btn sm ghost" style="margin-top:10px" onclick="saveGold()">Save gold</button>
+    </div>
+    <div class="card">
+      <h2>Data</h2>
+      <div class="note" style="margin:0 0 10px">All data lives only on this device (localStorage). Nothing is sent anywhere. Balances you enter are reference figures for your own tracking.</div>
+      <div class="row">
+        <button class="btn sm ghost" onclick="exportData()">Export backup</button>
+        <button class="btn sm ghost" onclick="document.getElementById('p-import').click()">Restore</button>
+      </div>
+      <input type="file" id="p-import" accept=".json" style="display:none">
+    </div>
+  </div>
+</div>
+
+<!-- bottom nav -->
+<div class="nav" id="nav"></div>
+
+<!-- add-account sheet -->
+<div class="onboard" id="sheet" style="display:none">
+  <div class="sheet">
+    <h1 class="greet" style="font-size:22px;margin-top:0" id="sheet-title">Add an account</h1>
+    <p class="sub" id="sheet-sub">Enter your accounts as they really are — Selfin renders whatever you put in.</p>
+    <label class="f">Institution</label><input class="f" id="s-inst" placeholder="e.g. Chase">
+    <label class="f">Nickname / type label</label><input class="f" id="s-type" placeholder="e.g. Personal Checking">
+    <div class="row">
+      <div><label class="f">Kind</label>
+        <select class="f" id="s-kind">
+          <option value="checking">Checking</option>
+          <option value="savings">Savings</option>
+          <option value="deposit">Interest-bearing deposit</option>
+          <option value="business">Business account</option>
+          <option value="credit">Available credit</option>
+        </select></div>
+      <div><label class="f">Balance ($)</label><input class="f" id="s-bal" type="number" step="0.01" inputmode="decimal"></div>
+    </div>
+    <label class="f">APY % (optional, for interest accounts)</label>
+    <input class="f" id="s-apy" type="number" step="0.01" placeholder="e.g. 4.33">
+    <div class="row" style="margin-top:16px">
+      <button class="btn ghost" onclick="closeSheet()">Cancel</button>
+      <button class="btn" onclick="addAccount()">Add</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+const KEY="selfin-v1";
+let db={accounts:[],gold:null,incBiz:true,history:[]};
+try{const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.accounts) db=s;}catch(e){}
+const save=()=>{localStorage.setItem(KEY,JSON.stringify(db));};
+const $=id=>document.getElementById(id);
+const fmt=n=>"$"+(Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:n%1?2:0,maximumFractionDigits:2});
+const fmt0=n=>"$"+Math.round(n).toLocaleString("en-US");
+
+const MARKS=["linear-gradient(135deg,#79f1d2,#4ecbaa)","linear-gradient(135deg,#9b8cff,#7a66e8)",
+  "linear-gradient(135deg,#e5b567,#caa14f)","linear-gradient(135deg,#8ad2ff,#5aa8e0)"];
+
+function totals(){
+  const acc=db.accounts;
+  const cashP=acc.filter(a=>["checking","savings","deposit"].includes(a.kind)).reduce((s,a)=>s+a.bal,0);
+  const cashB=acc.filter(a=>a.kind==="business").reduce((s,a)=>s+a.bal,0);
+  const credit=acc.filter(a=>a.kind==="credit").reduce((s,a)=>s+a.bal,0);
+  const gold=db.gold?db.gold.qty*db.gold.cost:0;
+  const net=cashP+(db.incBiz?cashB:0)+gold; // credit excluded by design
+  const annualInt=acc.filter(a=>a.apy>0).reduce((s,a)=>s+a.bal*a.apy/100,0);
+  return {cashP,cashB,credit,gold,net,annualInt};
+}
+
+function snapshot(){
+  const t=totals();
+  const today=new Date().toISOString().slice(0,10);
+  db.history=db.history.filter(h=>h.d!==today);
+  db.history.push({d:today,v:t.net});
+  db.history.sort((a,b)=>a.d.localeCompare(b.d));
+}
+
+function acctRow(a,i,mgr){
+  const m=MARKS[i%MARKS.length];
+  const initials=a.inst.split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+  return `<div class="acct">
+    <div class="amark" style="background:${m}">${initials}</div>
+    <div class="mid"><div class="nm">${a.inst}<span class="badge">manual</span></div>
+      <div class="ty">${a.type}${a.apy>0?` · <span class="apy">${a.apy}% APY</span>`:""}</div></div>
+    <div><div class="bal">${fmt(a.bal)}</div>
+      ${mgr?`<button class="del" onclick="delAccount(${a.id})">remove</button>`:""}</div>
+  </div>`;
+}
+
+function render(){
+  const t=totals();
+  // HOME
+  $("h-net").textContent=fmt0(t.net);
+  const h=db.history;
+  if(h.length>1){
+    const prev=h[h.length-2].v, d=t.net-prev;
+    $("h-delta").textContent=(d>=0?"+":"−")+fmt0(Math.abs(d)).slice(1)+" since last update";
+    $("h-delta").style.color=d>=0?"var(--mint)":"var(--red)";
+    $("h-delta").textContent=(d>=0?"+ ":"− ")+fmt0(Math.abs(d))+" since last update";
+  } else $("h-delta").textContent="Add updates over time to see change";
+  const parts=[["Personal cash",t.cashP,"var(--mint)"],["Business cash",db.incBiz?t.cashB:0,"var(--lav)"],["Metals (cost)",t.gold,"var(--sand)"]].filter(p=>p[1]>0);
+  const sum=parts.reduce((s,p)=>s+p[1],0)||1;
+  $("h-alloc").innerHTML=parts.map(p=>`<div style="width:${100*p[1]/sum}%;background:${p[2]}"></div>`).join("");
+  $("h-legend").innerHTML=parts.map(p=>`<span><i style="background:${p[2]}"></i>${p[0]} · ${fmt0(p[1])}</span>`).join("");
+  $("h-cashp").textContent=fmt0(t.cashP);
+  $("h-cashb").textContent=fmt0(t.cashB);
+  $("h-int").textContent=t.annualInt>0?fmt0(t.annualInt)+"/yr":"—";
+  $("h-gold").textContent=t.gold>0?fmt0(t.gold):"—";
+  drawChart();
+  $("h-insights").innerHTML=insights().slice(0,3).map(s=>`<div class="insight">${s}</div>`).join("")||`<div class="note">Add accounts to see insights.</div>`;
+
+  // ACCOUNTS
+  const per=db.accounts.filter(a=>["checking","savings","deposit"].includes(a.kind));
+  const biz=db.accounts.filter(a=>a.kind==="business");
+  const cred=db.accounts.filter(a=>a.kind==="credit");
+  $("a-personal").innerHTML=per.map((a,i)=>acctRow(a,i)).join("")||`<div class="note">No personal accounts yet.</div>`;
+  $("a-business").innerHTML=biz.map((a,i)=>acctRow(a,i+1)).join("")||`<div class="note">No business accounts yet.</div>`;
+  $("a-credit").innerHTML=cred.map((a,i)=>acctRow(a,i+2)).join("")+(cred.length?`<div class="note">Available credit is shown for reference and never counted as cash or net worth.</div>`:`<div class="note">No credit lines tracked.</div>`);
+  $("a-inc").checked=db.incBiz;
+
+  // INVEST
+  $("i-annual").textContent=t.annualInt>0?fmt0(t.annualInt):"$0";
+  const bearing=db.accounts.filter(a=>a.apy>0);
+  const dep=bearing.reduce((s,a)=>s+a.bal,0);
+  $("i-sub").textContent=bearing.length?`estimated per year across ${fmt0(dep)} in interest-bearing deposits`:"Add an account with an APY to see estimates.";
+  $("i-month").textContent=t.annualInt>0?fmt0(t.annualInt/12):"—";
+  $("i-day").textContent=t.annualInt>0?fmt(t.annualInt/365):"—";
+  $("i-banks").innerHTML=bearing.map((a,i)=>acctRow(a,i)).join("");
+  $("i-proj").innerHTML=bearing.length?[1,3,5].map(y=>{
+    const v=bearing.reduce((s,a)=>s+a.bal*Math.pow(1+a.apy/100,y),0);
+    return `<div class="stat" style="margin:8px 0"><div class="l">${y} year${y>1?"s":""} compounded</div>
+      <div class="v">${fmt0(v)} <span style="font-size:12px;color:var(--mint)">+${fmt0(v-dep)}</span></div></div>`;
+  }).join(""):"";
+  // calculator defaults
+  if(!$("c-amt").dataset.init){$("c-amt").value=dep||100000;$("c-apy").value=bearing[0]?bearing[0].apy:4.33;$("c-amt").dataset.init=1;}
+  calc();
+
+  // GOLD
+  $("g-list").innerHTML=db.gold&&db.gold.qty>0?`
+    <div class="acct"><div class="amark" style="background:${MARKS[2]}">Au</div>
+      <div class="mid"><div class="nm">Gold bars<span class="badge">manual</span></div>
+        <div class="ty">${db.gold.qty} bars · purchased ${db.gold.year} · ${fmt0(db.gold.cost)}/bar</div></div>
+      <div class="bal">${fmt0(db.gold.qty*db.gold.cost)}</div></div>`
+    :`<div class="note">No metals tracked yet — add them in Profile.</div>`;
+
+  // AI
+  $("ai-health").innerHTML=insights().map(s=>`<div class="insight">${s}</div>`).join("")||`<div class="note">Add accounts first.</div>`;
+
+  // PROFILE
+  $("p-list").innerHTML=db.accounts.map((a,i)=>acctRow(a,i,true)).join("")||`<div class="note">Nothing yet — add your first account.</div>`;
+  if(db.gold){$("p-gqty").value=db.gold.qty;$("p-gcost").value=db.gold.cost;$("p-gyear").value=db.gold.year;}
+}
+
+function drawChart(){
+  const h=db.history;
+  const el=$("h-chart");
+  if(h.length<2){el.innerHTML=`<div class="note" style="margin:0">Your net-worth line appears after a couple of updates on different days.</div>`;return;}
+  const W=460,H=150,px=8,py=12;
+  const vs=h.map(p=>p.v), lo=Math.min(...vs)*0.995, hi=Math.max(...vs)*1.005||1;
+  const X=i=>px+(W-2*px)*(h.length===1?0.5:i/(h.length-1));
+  const Y=v=>py+(H-py-18)*(1-(v-lo)/(hi-lo||1));
+  const pts=h.map((p,i)=>`${X(i)},${Y(p.v)}`).join(" ");
+  const area=`${px},${H-18} ${pts} ${W-px},${H-18}`;
+  el.innerHTML=`<svg class="chart" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
+    <polygon points="${area}" fill="rgba(121,241,210,.09)"/>
+    <polyline points="${pts}" fill="none" stroke="var(--mint)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${X(h.length-1)}" cy="${Y(vs[vs.length-1])}" r="6" fill="var(--card)"/>
+    <circle cx="${X(h.length-1)}" cy="${Y(vs[vs.length-1])}" r="4" fill="var(--mint)"/>
+    <text x="${X(h.length-1)-6}" y="${Y(vs[vs.length-1])-10}" text-anchor="end" font-size="12" font-weight="600" fill="var(--ink)">${fmt0(vs[vs.length-1])}</text>
+  </svg>`;
+}
+
+function insights(){
+  const t=totals(); const out=[];
+  if(!db.accounts.length) return out;
+  // FDIC concentration
+  const byInst={};
+  db.accounts.filter(a=>a.kind!=="credit").forEach(a=>{byInst[a.inst]=(byInst[a.inst]||0)+a.bal;});
+  Object.entries(byInst).forEach(([inst,v])=>{
+    if(v>250000) out.push(`<b>Deposit insurance check:</b> your tracked balance at ${inst} (${fmt0(v)}) exceeds the standard $250,000 FDIC limit per depositor, per bank. Worth confirming coverage categories or spreading the excess.`);
+  });
+  const totalCash=t.cashP+t.cashB;
+  if(totalCash>0&&t.gold/(totalCash+t.gold)<0.05&&totalCash>100000)
+    out.push(`<b>Concentration:</b> ${Math.round(100*totalCash/(totalCash+t.gold))}% of tracked wealth is cash. Cash above your emergency and near-term needs loses ground to inflation — consider whether some belongs in diversified investments (your risk tolerance and timeline decide, not an app).`);
+  if(t.annualInt>0) out.push(`<b>Passive interest:</b> your interest-bearing deposits generate an estimated ${fmt0(t.annualInt)}/year (~${fmt0(t.annualInt/12)}/month) if rates hold. APYs are variable — recheck them periodically.`);
+  const noApy=db.accounts.filter(a=>["checking","savings"].includes(a.kind)&&!a.apy&&a.bal>20000);
+  if(noApy.length) out.push(`<b>Idle cash:</b> ${noApy.map(a=>a.inst).join(", ")} ${noApy.length>1?"hold":"holds"} sizable balances with no APY recorded. High-yield savings currently pay ~4%+ — ${fmt0(noApy.reduce((s,a)=>s+a.bal,0)*0.04)}/yr at 4%.`);
+  if(t.cashB>0) out.push(`<b>Business reserves:</b> ${fmt0(t.cashB)} sits in business accounts. Keeping business and personal money separate (as you are) simplifies taxes and legal protection — a common rule of thumb is 3–6 months of operating costs in reserve.`);
+  if(db.gold) out.push(`<b>Gold:</b> ${db.gold.qty} bars at ${fmt0(db.gold.cost*db.gold.qty)} cost basis (${db.gold.year}). Add weight &amp; purity to value them at market — gold has moved substantially since 2021.`);
+  return out;
+}
+
+/* AI chat — canned, honest */
+const QA=[
+ ["Am I holding too much cash?",()=>{const t=totals();const c=t.cashP+t.cashB;
+   return `You're tracking ${fmt0(c)} in cash. Whether that's "too much" depends on goals: a common framework is 3–6 months of expenses liquid, a 1–2 year cushion for known big costs, and the rest working in diversified assets. I can only see balances you entered — a licensed advisor can see the whole picture.`}],
+ ["How much interest am I earning?",()=>{const t=totals();
+   return t.annualInt>0?`At the APYs you entered, roughly ${fmt0(t.annualInt)}/year — about ${fmt0(t.annualInt/12)}/month or ${fmt(t.annualInt/365)}/day — assuming rates and balances hold. These are estimates, not guaranteed payouts.`:`None of your entered accounts has an APY set. Add one in Profile to see estimates.`}],
+ ["How can I grow my wealth?",()=>`The boring-but-true levers: keep high-interest debt at zero, maximize tax-advantaged accounts, hold a diversified low-cost portfolio for long horizons, and keep cash yields competitive. Selfin shows your numbers; the strategy should come from your goals — and for sums like yours, an hour with a fee-only fiduciary advisor is cheap insurance.`],
+ ["Should I buy more gold?",()=>`I can't answer that responsibly — it depends on your risk tolerance, timeline, and what the rest of your portfolio holds. What I can say: your current bars are tracked at cost (${db.gold?fmt0(db.gold.qty*db.gold.cost):"$0"}), metals pay no income, and concentration in any single asset adds risk.`],
+ ["How should I separate business and personal money?",()=>`Keep dedicated business accounts (you do), pay yourself transfers rather than spending directly from business funds, keep a 3–6 month operating reserve, and never mix expenses — it protects your liability shield and makes taxes dramatically easier. An accountant can tailor the reserve number.`]
+];
+
+function buildChips(){
+  $("ai-chips").innerHTML=QA.map((q,i)=>`<span class="chip" onclick="answer(${i})">${q[0]}</span>`).join("");
+}
+function answer(i){const a=$("ai-answer");a.style.display="block";a.innerHTML=`<b style="color:var(--ink)">${QA[i][0]}</b><br><br>${QA[i][1]()}<br><br><span style="font-size:11px;color:var(--muted)">Rule-based response from your entered data · not financial advice</span>`;}
+
+/* calculator */
+function calc(){
+  const amt=+$("c-amt").value, apy=+$("c-apy").value;
+  $("c-amt-l").textContent=fmt0(amt); $("c-apy-l").textContent=apy.toFixed(2)+"%";
+  $("c-yr").textContent=fmt0(amt*apy/100); $("c-mo").textContent=fmt0(amt*apy/100/12);
+}
+$("c-amt").oninput=calc; $("c-apy").oninput=calc;
+
+/* account CRUD */
+let nextId=db.accounts.reduce((m,a)=>Math.max(m,a.id||0),0)+1;
+function openSheet(){$("sheet").style.display="flex";}
+function closeSheet(){$("sheet").style.display="none";}
+function addAccount(){
+  const inst=$("s-inst").value.trim(), type=$("s-type").value.trim()||"Account";
+  const bal=parseFloat($("s-bal").value), apy=parseFloat($("s-apy").value)||0;
+  if(!inst||!isFinite(bal)) return;
+  db.accounts.push({id:nextId++,inst,type,kind:$("s-kind").value,bal,apy});
+  snapshot(); save(); closeSheet(); render();
+  $("s-inst").value="";$("s-type").value="";$("s-bal").value="";$("s-apy").value="";
+}
+function delAccount(id){db.accounts=db.accounts.filter(a=>a.id!==id);snapshot();save();render();}
+function saveGold(){
+  const qty=+$("p-gqty").value||0, cost=+$("p-gcost").value||0, year=+$("p-gyear").value||new Date().getFullYear();
+  db.gold=qty>0?{qty,cost,year}:null; snapshot(); save(); render();
+}
+$("a-inc")&&($("a-inc").onchange=e=>{db.incBiz=e.target.checked;snapshot();save();render();});
+
+/* backup */
+function exportData(){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,1)],{type:"application/json"}));
+  a.download="selfin-backup-"+new Date().toISOString().slice(0,10)+".json"; a.click();
+}
+$("p-import").onchange=e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{const s=JSON.parse(r.result); if(!s.accounts)throw 0; db=s; save(); render();}catch(err){alert("Not a valid Selfin backup.");}};
+  r.readAsText(f);
+};
+
+/* nav */
+const NAV=[["home","Home","M3 11l9-8 9 8M5 9.5V21h5v-6h4v6h5V9.5"],
+ ["accounts","Accounts","M3 7h18v13H3zM3 11h18M7 16h4M3 7l2-4h14l2 4"],
+ ["invest","Invest","M3 20h18M5 20V12m5 8V7m5 13v-9m5 9V4"],
+ ["ai","Selfin AI","M12 3a7 7 0 017 7c0 3-2 4.5-2 7h-10c0-2.5-2-4-2-7a7 7 0 017-7zM9 21h6"],
+ ["profile","Profile","M12 12a4 4 0 100-8 4 4 0 000 8zM4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"]];
+$("nav").innerHTML=NAV.map(n=>`<button id="n-${n[0]}" onclick="go('${n[0]}')"><svg viewBox="0 0 24 24"><path d="${n[2]}"/></svg>${n[1]}</button>`).join("");
+function go(v){
+  NAV.forEach(n=>{ $("v-"+n[0]).classList.toggle("on",n[0]===v); $("n-"+n[0]).classList.toggle("on",n[0]===v); });
+}
+buildChips(); go("home"); render();
+
+/* first-run onboarding */
+if(!db.accounts.length){
+  openSheet();
+  $("sheet-title").textContent="Welcome to Selfin";
+  $("sheet-sub").textContent="Add your real accounts to begin — everything stays on this device. You can add more anytime in Profile.";
+}
+
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
